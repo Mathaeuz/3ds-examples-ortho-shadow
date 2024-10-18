@@ -56,18 +56,22 @@
 	dp4 r2.z, light[2], r1
 	dp4 r2.w, light[3], r1
 
-	rcp r3, r2
-	; texcoord0.uv = r2.xy * 0.5 + 0.5
+	rcp r3.x, r2.x
+	rcp r3.y, r2.y
+	rcp r3.z, r2.z
+	rcp r3.w, r2.w
+	; texcoord0 = XY * 0.5 + 0.5
+	mul r2.xy, r3.ww, r2
 	mul r2.xy, half, r2
 	add r2.xy, half, r2
+	; texcoord0w = 1 + Z, where Z is depth from -1 (closer) to 0 (further)
+	add r2.z, ones.z, r2.z
 	mov outtc0, r2.xy
-	; Z is depth from -1 (closer) to 0 (further)
-	; texcoord0w = 1.0 + r2.z
-	;add r2.z, ones, r2.z
-	;mov outtc0w, r2.z
+	mov outtc0w, r2.z
+	mov outtc1, r2.xy
 
 	; outtc1 = intex
-	mov outtc1, intex
+	;mov outtc1, intex
 
 	; Transform the normal vector with the modelView matrix
 	dp3 r14.x, modelView[0], innrm

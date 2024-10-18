@@ -226,7 +226,7 @@ int main()
 	C3D_Tex texture;
 	if (!loadTextureFromMem(&texture, NULL, texture_t3x, texture_t3x_size))
 		svcBreak(USERBREAK_PANIC);
-	C3D_TexSetFilter(&texture, GPU_LINEAR, GPU_NEAREST);
+	C3D_TexSetFilter(&texture, GPU_NEAREST, GPU_NEAREST);
 	texture.border = 0;
 	C3D_TexSetWrap(&texture, GPU_CLAMP_TO_BORDER, GPU_CLAMP_TO_BORDER);
 
@@ -234,7 +234,7 @@ int main()
 	C3D_Tex shadowTex;
 	C3D_TexInitShadow(&shadowTex, 256, 256);
 	shadowTex.border = 0xffffffff;
-	C3D_TexSetFilter(&shadowTex, GPU_LINEAR, GPU_LINEAR);
+	C3D_TexSetFilter(&shadowTex, GPU_NEAREST, GPU_NEAREST);
 	C3D_TexSetWrap(&shadowTex, GPU_CLAMP_TO_BORDER, GPU_CLAMP_TO_BORDER);
 
 	// Initialize the render targets
@@ -245,8 +245,8 @@ int main()
 	C3D_RenderTargetSetOutput(targetRight, GFX_TOP, GFX_RIGHT, DISPLAY_TRANSFER_FLAGS);
 
 	// Bind textures
-	// C3D_TexBind(0, &shadowTex); // Depth map only works as shadow on unit0
-	C3D_TexBind(0, &texture);
+	C3D_TexBind(0, &shadowTex); // Depth map only works as shadow on unit0
+	C3D_TexBind(1, &texture);
 
 	// Initialize the scene
 	sceneInit();
@@ -317,8 +317,8 @@ int main()
 
 			env = C3D_GetTexEnv(0);
 			C3D_TexEnvInit(env);
-			C3D_TexEnvSrc(env, C3D_RGB, GPU_TEXTURE0, GPU_PRIMARY_COLOR, GPU_PRIMARY_COLOR);
-			C3D_TexEnvFunc(env, C3D_RGB, GPU_REPLACE);
+			C3D_TexEnvSrc(env, C3D_RGB, GPU_TEXTURE1, GPU_PRIMARY_COLOR, GPU_PRIMARY_COLOR);
+			C3D_TexEnvFunc(env, C3D_RGB, GPU_MODULATE);
 
 			C3D_DepthMap(true, -1.0f, 0.0f);
 			C3D_CullFace(GPU_CULL_BACK_CCW);
